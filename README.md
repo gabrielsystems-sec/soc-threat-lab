@@ -59,11 +59,34 @@ Ação prática para corrigir vulnerabilidades através de automação via Bash.
 
 ---
 
-## 🚀 Roadmap de Implementação
-- [x] **Seção 1-3**: Setup e Customização do Wazuh.
-- [x] **Seção 7**: Vulnerability Detection (SCA).
-- [x] **Seção 9**: Automação de Resposta a Incidentes (Hardening).
-- [ ] **Seção 10-15**: Threat Hunting e Cloud Monitoring.
+## 🚀 Roadmap Estratégico
+
+### Fase 01: Core & Audit Foundation
+*Base do SIEM e conformidade inicial.*
+- [x] **Seção 1 a 3**: Setup, Preparação de Ambiente e Instalação Wazuh.
+- [x] **Seção 07**: Vulnerability Detection (SCA).
+- [ ] **Seção 08**: Uso de IDS no Wazuh.
+
+### Fase 02: Active Response & Alerts
+*Automação de defesa e notificações.*
+- [ ] **Seção 09**: Automação de resposta a incidentes.
+- [ ] **Seção 10**: Configuração de Alertas e Notificações.
+
+### Fase 03: Threat Intelligence & Hunting
+*Análise profunda e busca ativa por ameaças.*
+- [ ] **Seção 05**: Detecção de Malware.
+- [ ] **Seção 06**: Threat Hunting.
+- [ ] **Seção 13**: Uso de Inteligência Artificial (IA) aplicada ao SOC.
+
+### Fase 04: Ops, Cloud & Deception
+*Escalabilidade e táticas de engodo.*
+- [ ] **Seção 11**: Monitoramento de ferramentas.
+- [ ] **Seção 12**: Monitoramento de Cloud.
+- [ ] **Seção 15**: Uso de Honeypots com Wazuh e pfSense.
+
+### Fase 05: Governance & Admin
+*Manutenção e administração do sistema.*
+- [ ] **Seção 14**: Administração do Sistema.
 
 ---
 > [!IMPORTANT]
