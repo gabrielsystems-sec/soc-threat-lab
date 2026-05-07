@@ -70,9 +70,10 @@ Implementação de detecção baseada em host e rede para identificar intrusões
   <summary>📂 Visualizar Evidências de Detecção (Ataque e Defesa)</summary>
 
   * **Monitoramento de Host Real (Ryzen 7)**: ![Inventory](./docs/assets/01-agent-inventory-host.png)
-  * **Auditoria de Conformidade (SCA)**: ![SCA Hardening](./docs/assets/04-hardening-audit-sca.png)
-  * **Detecção de Rede (Suricata NIDS)**: ![NIDS Detection](./docs/assets/06-nids-detection-suricata-suricata.jpg)
-  * **[GOLDEN EVIDENCE] Detecção de Host (Brute Force SSH)**: ![HIDS Detection](./docs/assets/05-hids-detection-ssh-bruteforce.jpg)
+  * **Auditoria de Conformidade (SCA)**: ![SCA Hardening](./docs/assets/02-hardening-audit-sca.png)
+  * **Detecção de Rede (Suricata NIDS)**: ![NIDS Detection](./docs/assets/03-nids-detection-network.png)
+  * **Detecção de Host (Brute Force SSH)**: ![HIDS Detection](./docs/assets/04-hids-detection-auth.png)
+
 </details>
 
 ---
