@@ -42,7 +42,7 @@ Utilização do **SCA (Security Configuration Assessment)** para identificar con
 ---
 
 ## 📁 3. Automated Hardening & Remediation
-Ação prática para corrigir vulnerabilidades através de automação via Bash.
+Ação prática para corrigir vulnerabilidaclipboarddes através de automação via Bash.
 
 ### Troubleshooting (Bash Automation)
 * **Incidente**: Script de hardening falhou por falta de privilégios e erro de permissão.
@@ -59,13 +59,31 @@ Ação prática para corrigir vulnerabilidades através de automação via Bash.
 
 ---
 
+## 📁 4. IDS Integration & Real-Time Attack Detection
+Implementação de detecção baseada em host e rede para identificar intrusões ativas e correlação de eventos.
+
+### Estratégia de Defesa em Camadas
+* **NIDS (Network IDS)**: Integração com **Suricata** para monitoramento e alertas de tráfego malicioso na rede.
+* **HIDS (Host IDS)**: Análise de logs críticos do sistema (PAM/SSH) para detecção de ataques de força bruta.
+
+<details>
+  <summary>📂 Visualizar Evidências de Detecção (Ataque e Defesa)</summary>
+
+  * **Monitoramento de Host Real (Ryzen 7)**: ![Inventory](./docs/assets/01-agent-inventory-host.png)
+  * **Auditoria de Conformidade (SCA)**: ![SCA Hardening](./docs/assets/04-hardening-audit-sca.png)
+  * **Detecção de Rede (Suricata NIDS)**: ![NIDS Detection](./docs/assets/06-nids-detection-suricata-suricata.jpg)
+  * **[GOLDEN EVIDENCE] Detecção de Host (Brute Force SSH)**: ![HIDS Detection](./docs/assets/05-hids-detection-ssh-bruteforce.jpg)
+</details>
+
+---
+
 ## 🚀 Roadmap Estratégico
 
 ### Fase 01: Core & Audit Foundation
 *Base do SIEM e conformidade inicial.*
 - [x] **Seção 1 a 3**: Setup, Preparação de Ambiente e Instalação Wazuh.
 - [x] **Seção 07**: Vulnerability Detection (SCA).
-- [ ] **Seção 08**: Uso de IDS no Wazuh.
+- [x] **Seção 08**: Uso de IDS no Wazuh.
 
 ### Fase 02: Active Response & Alerts
 *Automação de defesa e notificações.*
@@ -87,6 +105,7 @@ Ação prática para corrigir vulnerabilidades através de automação via Bash.
 ### Fase 05: Governance & Admin
 *Manutenção e administração do sistema.*
 - [ ] **Seção 14**: Administração do Sistema.
+- [ ] **Seção 4**: Cluster com servidores Wazuh.
 
 ---
 > [!IMPORTANT]
