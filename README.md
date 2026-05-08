@@ -76,6 +76,33 @@ Implementação de detecção baseada em host e rede para identificar intrusões
 
 </details>
 
+## 📁 5. Active Response & Incident Notification (SOC Automation)
+Implementação de resposta ativa para bloqueio automático de ameaças e integração com canais de comunicação em tempo real via Telegram.
+
+### Troubleshooting (Post-Mortem: XML Syntax & Rule Tuning)
+* **Incidente**: Falha crítica na reinicialização do `wazuh-manager` após a edição do `ossec.conf` e falha inicial na execução do banimento de IPs.
+* **Causa Raiz 1 (Sintaxe XML)**: Identificação de conflitos por blocos `<command>` e `<active-response>` duplicados. O parser do Wazuh interrompia o serviço para evitar corrupção de dados ao ler nomes de comandos repetidos.
+* **Causa Raiz 2 (Lógica de Detecção - Regras 533 & 510)**: 
+    * **Regra 533 (Netstat)**: Embora detectasse a abertura de portas durante o ataque Hydra, o log gerado por essa regra específica não fornece o campo `srcip` (IP de origem), o que inviabilizava o parâmetro para o script `firewall-drop`.
+    * **Regra 510 (Rootcheck)**: Monitoramento de anomalias baseado em host (HIDS) que detectou a atividade suspeita e disparou alertas de integridade.
+* **Resolução**: Saneamento do arquivo de configuração via `vim`, remoção das redundâncias e inclusão do parâmetro `<expect>srcip</expect>`. Validação final realizada através de um ataque simulado de Brute Force SSH para forçar a geração de logs com IP de origem mapeado.
+
+<details>
+  <summary>📂 Visualizar Ciclo de Resposta Ativa e Notificação</summary>
+
+  * **[GOLDEN EVIDENCE] Fluxo de Ataque e Alerta Multicamada (Regras 533/510)**: 
+  ![Ataque e Alerta](./docs/assets/hydra-attack-wazuh-alert-telegram.jpg)
+  
+  * **Conflito de Sintaxe Identificado no ossec.conf**: 
+  ![XML Conflict](./docs/assets/ossec-conf-xml-syntax-conflict.png)
+  
+  * **Log de Sucesso: Active Response (Firewall Drop)**: 
+  ![Active Response OK](./docs/assets/wazuh-active-response-firewall-drop.png)
+  
+  * **Erro de Status do Manager (Fase de Debugging)**: 
+  ![Manager Error](./docs/assets/wazuh-manager-error-failed-status.png)
+</details>
+
 ---
 
 ## 🚀 Roadmap Estratégico
@@ -88,8 +115,8 @@ Implementação de detecção baseada em host e rede para identificar intrusões
 
 ### Fase 02: Active Response & Alerts
 *Automação de defesa e notificações.*
-- [ ] **Seção 09**: Automação de resposta a incidentes.
-- [ ] **Seção 10**: Configuração de Alertas e Notificações.
+- [x] **Seção 09**: Automação de resposta a incidentes.
+- [x] **Seção 10**: Configuração de Alertas e Notificações.
 
 ### Fase 03: Threat Intelligence & Hunting
 *Análise profunda e busca ativa por ameaças.*
