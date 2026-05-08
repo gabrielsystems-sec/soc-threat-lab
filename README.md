@@ -91,7 +91,7 @@ Implementação de resposta ativa para bloqueio automático de ameaças e integr
   <summary>📂 Visualizar Ciclo de Resposta Ativa e Notificação</summary>
 
   * **[GOLDEN EVIDENCE] Fluxo de Ataque e Alerta Multicamada (Regras 533/510)**: 
-  ![Ataque e Alerta](./docs/assets/hydra-attack-wazuh-alert-telegram.jpg)
+  ![Ataque e Alerta](./docs/assets/hydra-attack-wazuh-alert-telegram.png)
   
   * **Conflito de Sintaxe Identificado no ossec.conf**: 
   ![XML Conflict](./docs/assets/ossec-conf-xml-syntax-conflict.png)
