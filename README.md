@@ -9,7 +9,7 @@ O objetivo principal é garantir uma infraestrutura auditável em tempo real, re
 
 # Arquitetura do Laboratório
 
-```text
+<pre>
   [Kali Linux] (Simulação de Ataques)
        │
        ▼
@@ -27,6 +27,7 @@ O objetivo principal é garantir uma infraestrutura auditável em tempo real, re
   ▼ (Módulos SOAR / Integrações) ▼
 [VirusTotal API]            [Telegram Alerts]
 [AbuseIPDB API]             [Active Response (FW-Drop)]
+</pre>
 
 ---
 
