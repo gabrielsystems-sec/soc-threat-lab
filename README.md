@@ -1,140 +1,132 @@
 # SOC & Defensive Security Infrastructure (Wazuh SIEM) 🛡️
 
-Repositório dedicado à implementação de monitoramento defensivo e resposta a incidentes. Este laboratório documenta a transição para um ecossistema focado em **Visibilidade, Hardening e Automação Blue Team**.
+Repositório dedicado à implementação de monitoramento defensivo, visibilidade centralizada e resposta automatizada a incidentes. Este laboratório documenta a construção de um ecossistema focado em **Detecção Avançada, Hardening Contínuo e Cultura Blue Team**.
 
-## 🎯 Business Value
-Garantir infraestrutura auditável, detecção automática de vulnerabilidades e resposta rápida a incidentes através de visibilidade centralizada.
+## 🎯 Business Value & Resiliência
+O objetivo principal é garantir uma infraestrutura auditável em tempo real, reduzindo o **MTTR (Mean Time To Respond)** através de automações de bloqueio e notificações instantâneas de ameaças críticas.
 
 ---
 
-## 📁 1. Infrastructure Deployment & Connectivity
-Foco no setup inicial e na resolução de conflitos de comunicação entre o Manager e o Agente.
+## Stack Tecnológica & Matriz de Arquitetura SOC
+* **SIEM/XDR:** Wazuh (Manager, Indexer, Dashboard).
+* **IDS/IPS:** Suricata (NIDS), Wazuh Agent (HIDS).
+* **Sistemas Operacionais:** Rocky Linux 9 (Manager) & Ubuntu 24.04 LTS (Agent/Host Real) & Kali Linux.
+* **Integrações (SOAR):** VirusTotal API, Telegram Bot API.
+
+### Matriz de Capacidades Defensivas
+| Camada | Tecnologia | Estratégia de Defesa | Função no Ecossistema |
+| :--- | :--- | :--- | :--- |
+| **Log Management** | Wazuh Indexer | Data Retention / Alert Indexing | Centralização e análise de telemetria |
+| **Vulnerability** | Wazuh SCA | Hardening Policies (CIS) | Auditoria de conformidade e falhas de config |
+| **Threat Intel** | VirusTotal API | Hash Reputation / Malware Analysis | Alertas com inteligência externa |
+| **Active Response** | Firewall-Drop | Automate Ban (IP Tables/NFTables) | Resposta automática a ataques de força bruta |
+| **Notification** | Telegram Bot | Real-time Webhook Alerts | Notificação crítica para o time de resposta |
+
+---
+
+## 📁 1. Core Deployment & Hands-on Connectivity
+
+### Contexto do Problema
+Resolução de barreiras de comunicação e estabilização do túnel de telemetria entre o cérebro (Manager) e os ativos monitorados.
 
 ### Troubleshooting (Post-Mortem: Version Mismatch)
-* **Incidente**: Agente Ubuntu reportava status desconectado.
-* **Causa Raiz**: Investigação de logs identificou incompatibilidade de versão (Manager v4.10 vs Agent v4.14).
-* **Resolução**: Padronização das versões e validação do handshake via `authd`.
+* **Incidente:** Agente reportava status desconectado mesmo com portas 1514/1515 abertas.
+* **Causa Raiz:** Investigação de logs revelou incompatibilidade de versão (Manager v4.10 vs Agent v4.14).
+* **Resolução:** Padronização das versões, ajuste de permissões de leitura do `ossec.conf` e validação do handshake via `authd`.
 
 <details>
   <summary>📂 Visualizar Evidências de Conectividade</summary>
 
-  * **Setup do Servidor**: ![Setup](./docs/assets/01-wazuh-server-setup-success.png)
-  * **Deploy do Agente**: ![Deploy](./docs/assets/02-ubuntu-agent-deployment.png)
-  * **Log de Erro (Incompatibilidade)**: ![Log Erro](./docs/assets/03-troubleshooting-version-mismatch.png)
-  * **Status de Conexão OK**: ![Status OK](./docs/assets/04-connectivity-proof.png)
+  * **Setup do Servidor:** ![Setup](./docs/assets/01-wazuh-server-setup-success.png)
+  * **Log de Erro (Handshake):** ![Log Erro](./docs/assets/03-troubleshooting-version-mismatch.png)
+  * **Status de Conexão OK:** ![Status OK](./docs/assets/04-connectivity-proof.png)
 </details>
 
 ---
 
-## 📁 2. Vulnerability Management & Governance (SCA)
-Monitoramento contínuo da superfície de ataque e conformidade com políticas de segurança.
+## 📁 2. Governance & Vulnerability Assessment (SCA)
 
 ### Contexto do Problema
-Utilização do **SCA (Security Configuration Assessment)** para identificar configurações inseguras, como IP Forwarding ativo, que violam as políticas de hardening.
+Identificação de "configurações zumbis" e serviços inseguros que aumentam a superfície de ataque lateral.
+
+### Estratégia SRE
+Utilização do **SCA (Security Configuration Assessment)** para auditar vetores como IP Forwarding e senhas fracas, transformando conformidade em métrica visual.
 
 <details>
   <summary>📂 Visualizar Auditoria de Vulnerabilidades</summary>
 
-  * **Inventário de Ativos (Ryzen 7)**: ![Inventory](./docs/assets/05-inventory-and-vuln.png)
-  * **Detecção de Falha SCA**: ![SCA Detection](./docs/assets/wazuh-sca-detecting-vulnerability.png)
+  * **Inventário de Ativos (Ryzen 7):** ![Inventory](./docs/assets/05-inventory-and-vuln.png)
+  * **Detecção de Falha SCA:** ![SCA Detection](./docs/assets/wazuh-sca-detecting-vulnerability.png)
+  * **Compliance 100%:** ![100% Success](./docs/assets/wazuh-sca-hardening-success.png)
 </details>
 
 ---
 
-## 📁 3. Automated Hardening & Remediation
-Ação prática para corrigir vulnerabilidaclipboarddes através de automação via Bash.
-
-### Troubleshooting (Bash Automation)
-* **Incidente**: Script de hardening falhou por falta de privilégios e erro de permissão.
-* **Resolução**: Ajuste de permissões `sudo` e deploy remoto via `SCP`.
-
-<details>
-  <summary>📂 Visualizar Ciclo de Remediação</summary>
-
-  * **Log de Erro de Permissão**: ![Perm Error](./docs/assets/bash-permission-denied-remediation-log.png)
-  * **Transferência via SCP**: ![SCP Success](./docs/assets/scp-transfer-success-ubuntu-agent.png)
-  * **Execução com Sucesso (Sudo)**: ![Sudo Success](./docs/assets/sudo-bash-hardening-success-ubuntu-compliance.png)
-  * **[GOLDEN EVIDENCE] Compliance 100%**: ![100% Success](./docs/assets/wazuh-sca-hardening-success.png)
-</details>
-
----
-
-## 📁 4. IDS Integration & Real-Time Attack Detection
-Implementação de detecção baseada em host e rede para identificar intrusões ativas e correlação de eventos.
+## 📁 3. Network & Host IDS (Real-Time Detection)
 
 ### Estratégia de Defesa em Camadas
-* **NIDS (Network IDS)**: Integração com **Suricata** para monitoramento e alertas de tráfego malicioso na rede.
-* **HIDS (Host IDS)**: Análise de logs críticos do sistema (PAM/SSH) para detecção de ataques de força bruta.
+* **NIDS (Network IDS):** Integração com **Suricata** para análise de assinaturas de tráfego malicioso em tempo real.
+* **HIDS (Host IDS):** Monitoramento de integridade de arquivos (FIM) e análise de logs de autenticação (PAM/SSH).
 
 <details>
-  <summary>📂 Visualizar Evidências de Detecção (Ataque e Defesa)</summary>
+  <summary>📂 Visualizar Evidências de Detecção</summary>
 
-  * **Monitoramento de Host Real (Ryzen 7)**: ![Inventory](./docs/assets/01-agent-inventory-host.png)
-  * **Auditoria de Conformidade (SCA)**: ![SCA Hardening](./docs/assets/02-hardening-audit-sca.png)
-  * **Detecção de Rede (Suricata NIDS)**: ![NIDS Detection](./docs/assets/03-nids-detection-network.png)
-  * **Detecção de Host (Brute Force SSH)**: ![HIDS Detection](./docs/assets/04-hids-detection-auth.png)
-
-</details>
-
-## 📁 5. Active Response & Incident Notification (SOC Automation)
-Implementação de resposta ativa para bloqueio automático de ameaças e integração com canais de comunicação em tempo real via Telegram.
-
-### Troubleshooting (Post-Mortem: XML Syntax & Rule Tuning)
-* **Incidente**: Falha crítica na reinicialização do `wazuh-manager` após a edição do `ossec.conf` e falha inicial na execução do banimento de IPs.
-* **Causa Raiz 1 (Sintaxe XML)**: Identificação de conflitos por blocos `<command>` e `<active-response>` duplicados. O parser do Wazuh interrompia o serviço para evitar corrupção de dados ao ler nomes de comandos repetidos.
-* **Causa Raiz 2 (Lógica de Detecção - Regras 533 & 510)**: 
-    * **Regra 533 (Netstat)**: Embora detectasse a abertura de portas durante o ataque Hydra, o log gerado por essa regra específica não fornece o campo `srcip` (IP de origem), o que inviabilizava o parâmetro para o script `firewall-drop`.
-    * **Regra 510 (Rootcheck)**: Monitoramento de anomalias baseado em host (HIDS) que detectou a atividade suspeita e disparou alertas de integridade.
-* **Resolução**: Saneamento do arquivo de configuração via `vim`, remoção das redundâncias e inclusão do parâmetro `<expect>srcip</expect>`. Validação final realizada através de um ataque simulado de Brute Force SSH para forçar a geração de logs com IP de origem mapeado.
-
-<details>
-  <summary>📂 Visualizar Ciclo de Resposta Ativa e Notificação</summary>
-
-  * **[GOLDEN EVIDENCE] Fluxo de Ataque e Alerta Multicamada (Regras 533/510)**: 
-  ![Ataque e Alerta](./docs/assets/hydra-attack-wazuh-alert-telegram.png)
-  
-  * **Conflito de Sintaxe Identificado no ossec.conf**: 
-  ![XML Conflict](./docs/assets/ossec-conf-xml-syntax-conflict.png)
-  
-  * **Log de Sucesso: Active Response (Firewall Drop)**: 
-  ![Active Response OK](./docs/assets/wazuh-active-response-firewall-drop.png)
-  
-  * **Erro de Status do Manager (Fase de Debugging)**: 
-  ![Manager Error](./docs/assets/wazuh-manager-error-failed-status.png)
+  * **Detecção de Rede (Suricata):** ![NIDS Detection](./docs/assets/03-nids-detection-network.png)
+  * **Detecção de Host (Brute Force):** ![HIDS Detection](./docs/assets/04-hids-detection-auth.png)
 </details>
 
 ---
 
-## 🚀 Roadmap Estratégico
+## 📁 4. SOC Automation: Active Response & Threat Intelligence (SOAR)
+
+### Contexto do Problema
+Ataques de força bruta e malwares exigem respostas em milissegundos, superando a velocidade de reação humana.
+
+### Troubleshooting (XML Integrity & Parameter Tuning)
+* **Incidente:** Falha crítica no boot do Manager após configuração de APIs externas.
+* **Causa Raiz 1 (Sintaxe XML):** Presença de *Non-breaking spaces* (NBSP) no `ossec.conf` (Erro Linha 0). Resolvido via `sed`.
+* **Causa Raiz 2 (Incompatibilidade):** Uso de tags inválidas (`alert_only_positive_result`) não suportadas pelo integrador.
+* **Resolução:** Limpeza de caracteres invisíveis e refatoração do bloco `<integration>` para o padrão minimalista funcional.
+
+<details>
+  <summary>📂 Visualizar Evidências de Automação e Resposta</summary>
+
+  * **Pipeline Completo (Detecção > VirusTotal > Telegram):** ![Alerta SOAR](./docs/assets/wazuh-integration-virustotal-telegram-alert.png)
+  
+  * **Investigação de Erro (Parsing XML):** ![XML Error](./docs/assets/wazuh-xml-parsing-error-investigation.png)
+  
+  * **Identificação de Parâmetro Inválido:** ![Parameter Error](./docs/assets/wazuh-invalid-parameter-detection.png)
+  
+  * **Log de Sucesso: Active Response (Ban):** ![Active Response OK](./docs/assets/wazuh-active-response-firewall-drop.png)
+</details>
+
+---
+
+## Roadmap Estratégico
 
 ### Fase 01: Core & Audit Foundation
-*Base do SIEM e conformidade inicial.*
-- [x] **Seção 1 a 3**: Setup, Preparação de Ambiente e Instalação Wazuh.
-- [x] **Seção 07**: Vulnerability Detection (SCA).
-- [x] **Seção 08**: Uso de IDS no Wazuh.
+*Foco na estabilização do SIEM e visibilidade inicial.*
+- [x] **Setup & Connectivity**: Handshake otimizado entre Manager e Agentes.
+- [x] **Vulnerability Management**: Auditoria contínua via SCA e políticas CIS.
+- [x] **IDS Foundations**: Implementação de NIDS (Suricata) e HIDS (Wazuh).
 
-### Fase 02: Active Response & Alerts
-*Automação de defesa e notificações.*
-- [x] **Seção 09**: Automação de resposta a incidentes.
-- [x] **Seção 10**: Configuração de Alertas e Notificações.
+### Fase 02: SOC Automation (SOAR)
+*Foco em inteligência e resposta automática.*
+- [x] **Incident Response**: Bloqueio dinâmico de ameaças (Firewall-Drop).
+- [x] **Threat Intelligence**: Enriquecimento de alertas via VirusTotal API.
+- [x] **Real-time Notifications**: Transmissão de eventos críticos via Telegram.
 
-### Fase 03: Threat Intelligence & Hunting
-*Análise profunda e busca ativa por ameaças.*
-- [ ] **Seção 05**: Detecção de Malware.
-- [ ] **Seção 06**: Threat Hunting.
-- [ ] **Seção 13**: Uso de Inteligência Artificial (IA) aplicada ao SOC.
+### Fase 03: Threat Hunting & Monitoring
+*Foco em análise profunda e busca ativa por anomalias.*
+- [ ] **Advanced Logging**: Implementação de Sysmon para visibilidade granular de processos.
+- [ ] **Malware Hunting**: Criação de regras personalizadas para detecção de persistência.
+- [ ] **Security Analytics**: Uso de dashboards avançados para correlação de eventos.
 
-### Fase 04: Ops, Cloud & Deception
-*Escalabilidade e táticas de engodo.*
-- [ ] **Seção 11**: Monitoramento de ferramentas.
-- [ ] **Seção 12**: Monitoramento de Cloud.
-- [ ] **Seção 15**: Uso de Honeypots com Wazuh e pfSense.
-
-### Fase 05: Governance & Admin
-*Manutenção e administração do sistema.*
-- [ ] **Seção 14**: Administração do Sistema.
-- [ ] **Seção 4**: Cluster com servidores Wazuh.
+### Fase 04: Cloud & Deception Tactics
+*Foco em escalabilidade e táticas de engodo.*
+- [ ] **Cloud Security**: Monitoramento de workloads em AWS/Azure.
+- [ ] **Deception Tactics**: Implementação de Honeypots integrados para detecção de movimento lateral.
 
 ---
 > [!IMPORTANT]
-> **Lição Aprendida**: A segurança não termina na instalação. A confiabilidade do SOC depende da análise profunda da causa raiz e da garantia de conformidade via automação.
+> **Lição Aprendida**: A eficiência de um SOC não é medida pela quantidade de alertas, mas pela precisão do diagnóstico e pela velocidade da resposta automatizada. A análise da causa raiz nos logs do Kernel e do SIEM é o que diferencia um instalador de ferramentas de um Analista de Segurança.
