@@ -9,6 +9,7 @@ O objetivo principal é garantir uma infraestrutura auditável em tempo real, re
 
 # Arquitetura do Laboratório
 
+```text
   [Kali Linux] (Simulação de Ataques)
        │
        ▼
