@@ -231,7 +231,7 @@ Durante o desenvolvimento, enfrentamos desafios críticos de integração que ex
   <summary>📂 Evidências do Pipeline de IA</summary>
 
 - **Troubleshooting de API:** Erros de pipeline sendo diagnosticados e corrigidos via terminal. ![Pipeline Debug](./docs/assets/wazuh-ai-integration-troubleshooting-pipeline.png)
-- **Resposta Inteligente:** Alerta processado pela IA entregue no Telegram com diagnóstico e sugestão de mitigação. ![Telegram Alert](./docs/assets/wazuh-ai-incident-response-telegram-alert.pmg)
+- **Resposta Inteligente:** Alerta processado pela IA entregue no Telegram com diagnóstico e sugestão de mitigação. ![Telegram Alert](./docs/assets/wazuh-ai-incident-response-telegram-alert.png)
 - **Calibração (Tuning):** Ajuste de regras (`level="0"`) para eliminação de *alert fatigue* e otimização do SOC. ![Tuning Success](./docs/assets/wazuh-alert-tuning-success.png)
 
 </details>
