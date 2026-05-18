@@ -90,7 +90,6 @@ Uso do módulo SCA (Security Configuration Assessment) do Wazuh para rodar teste
 <details>
   <summary>📂 Evidências de Auditoria e Ajustes de Segurança</summary>
 
-- Inventário de Ativos do Host: ![Inventário](./docs/assets/01-agent-inventory-host.png)
 - Alertas de Falha de Compliance encontrados pelo SCA: ![SCA Diagnóstico](./docs/assets/02-hardening-audit-sca.png)
 - Tratamento de Erro de Permissão de Leitura nos Logs: ![Correção de Permissão](./docs/assets/bash-permission-denied-remediation-log.png)
 - Sistema Corrigido e Hardening Aplicado com Sucesso: ![Hardening OK](./docs/assets/sudo-bash-hardening-success-ubuntu-compliance.png)
@@ -213,6 +212,35 @@ Em estruturas profissionais de maior porte, as integrações montadas nesse proj
 
 ---
 
+---
+
+# 📁 6. AI-Powered Incident Response (Wazuh + LLM Integration)
+
+## Contexto
+Implementação de uma camada de inteligência sobre o pipeline de alertas. O objetivo é utilizar LLMs para triar incidentes em tempo real, fornecendo diagnóstico imediato e recomendações de remediação enviadas diretamente para o canal operacional (Telegram).
+
+## Troubleshooting — Automação e Ajustes de Performance
+Durante o desenvolvimento, enfrentamos desafios críticos de integração que exigiram análise técnica profunda:
+
+- **Resiliência de API:** Erros de requisição (HTTP 400/403) ocorreram devido a mudanças na política de modelos da API. A resolução envolveu a implementação de tratamento de exceções robusto e gestão segura de segredos (Secrets Management), eliminando a exposição de credenciais em logs ou histórico do shell.
+- **Tuning de Ruído (Alert Fatigue):** Identificamos um volume excessivo de falsos positivos no alerta `553` (File deleted) durante scans de rede. Realizamos a calibração fina via `local_rules.xml`, filtrando ruídos operacionais e focando a IA apenas em eventos de alta severidade.
+
+
+
+<details>
+  <summary>📂 Evidências do Pipeline de IA</summary>
+
+- **Troubleshooting de API:** Erros de pipeline sendo diagnosticados e corrigidos via terminal. ![Pipeline Debug](./docs/assets/wazuh-ai-integration-troubleshooting-pipeline.png)
+- **Resposta Inteligente:** Alerta processado pela IA entregue no Telegram com diagnóstico e sugestão de mitigação. ![Telegram Alert](./docs/assets/wazuh-ai-incident-response-telegram-alert.pmg)
+- **Calibração (Tuning):** Ajuste de regras (`level="0"`) para eliminação de *alert fatigue* e otimização do SOC. ![Tuning Success](./docs/assets/wazuh-alert-tuning-success.png)
+
+</details>
+
+### O que aprendi aqui
+- **Segurança de Pipeline:** A automação deve ser resiliente a erros de API e, acima de tudo, segura. Nunca exponha credenciais em logs ou histórico de comandos.
+- **Foco no que importa:** O maior desafio de um SIEM não é detectar tudo, mas filtrar o ruído. O ajuste fino (`tuning`) é o que garante que o analista de segurança não ignore alertas importantes por fadiga operacional.
+- **Valor da IA:** A IA no SOC reduz drasticamente o MTTR, transformando um alerta técnico bruto em uma resposta estruturada de negócio.
+
 # Indicadores do Laboratório
 
 | Métrica | Objetivo principal |
@@ -223,33 +251,3 @@ Em estruturas profissionais de maior porte, as integrações montadas nesse proj
 | Automação de Rotinas | Manter scripts de checagem rodando sozinhos para evitar falhas manuais |
 
 ---
-
-# Roadmap de Evolução
-
-## Fase 1 — Estrutura Base e Auditoria
-- [x] Instalação do laboratório e conexão estável entre os sistemas
-- [x] Auditorias automáticas de configuração usando o módulo SCA
-- [x] Configuração inicial das ferramentas de detecção de rede (Suricata)
-
-## Fase 2 — Automação e Inteligência
-- [x] Bloqueio automático de IPs (Active Response)
-- [x] Integrações com APIs externas (VirusTotal e AbuseIPDB)
-- [x] Envio de notificações automáticas direto para o Telegram
-
-## Fase 3 — Caça a Ameaças (Threat Hunting)
-- [x] Criação de scripts de auditoria automatizados no agendador do sistema
-- [x] Testes e correlação de ataques reais na camada de aplicação web
-- [ ] Implementação do Sysmon para obter detalhes finos sobre processos ativos
-- [ ] Criação de regras customizadas para detectar técnicas de persistência hacker
-- [ ] Montagem de painéis de visualização personalizados para crises
-
-## Fase 4 — Ambientes Cloud e Engodo
-- [ ] Expandir o monitoramento para servidores em nuvem (AWS/Azure)
-- [ ] Instalação de Honeypots integrados para detectar movimentações internas de invasores
-- [ ] Cruzamento de todos os alarmes criados com as táticas da matriz MITRE ATT&CK
-- [ ] Criação e padronização de regras de detecção usando o formato universal Sigma Rules
-
----
-
-> [!IMPORTANT]
-> Lição Aprendida: A eficiência de um SOC não é medida pela quantidade de alertas, mas pela precisão do diagnóstico e pela velocidade da resposta automatizada. A análise da causa raiz nos logs do Kernel e do SIEM é o que diferencia um instalador de ferramentas de um Analista de Segurança.
