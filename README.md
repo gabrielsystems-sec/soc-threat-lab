@@ -212,27 +212,21 @@ Em estruturas profissionais de maior porte, as integrações montadas nesse proj
 
 ---
 
----
+# 📁 6. AWS Log Ingestion & AI-Powered Incident Response
 
-# 📁 6. AI-Powered Incident Response (Wazuh + LLM Integration)
+Integração do ecossistema AWS (CloudTrail) com o SIEM para centralização de logs e implementação de camada de triagem inteligente via LLM.
 
-## Contexto
-Implementação de uma camada de inteligência sobre o pipeline de alertas. O objetivo é utilizar LLMs para triar incidentes em tempo real, fornecendo diagnóstico imediato e recomendações de remediação enviadas diretamente para o canal operacional (Telegram).
-
-## Troubleshooting — Automação e Ajustes de Performance
-Durante o desenvolvimento, enfrentamos desafios críticos de integração que exigiram análise técnica profunda:
-
-- **Resiliência de API:** Erros de requisição (HTTP 400/403) ocorreram devido a mudanças na política de modelos da API. A resolução envolveu a implementação de tratamento de exceções robusto e gestão segura de segredos (Secrets Management), eliminando a exposição de credenciais em logs ou histórico do shell.
-- **Tuning de Ruído (Alert Fatigue):** Identificamos um volume excessivo de falsos positivos no alerta `553` (File deleted) durante scans de rede. Realizamos a calibração fina via `local_rules.xml`, filtrando ruídos operacionais e focando a IA apenas em eventos de alta severidade.
-
-
+## Desafios de Engenharia
+- **Pipeline:** Migração da ingestão nativa para Filebeat devido a limitações de binários.
+- **Tuning:** Redução de *alert fatigue* via filtros de eventos de baixa severidade no `local_rules.xml`.
 
 <details>
-  <summary>📂 Evidências do Pipeline de IA</summary>
+  <summary>📂 Evidências Técnicas (Troubleshooting & Sucesso)</summary>
 
-- **Troubleshooting de API:** Erros de pipeline sendo diagnosticados e corrigidos via terminal. ![Pipeline Debug](./docs/assets/wazuh-ai-integration-troubleshooting-pipeline.png)
-- **Resposta Inteligente:** Alerta processado pela IA entregue no Telegram com diagnóstico e sugestão de mitigação. ![Telegram Alert](./docs/assets/wazuh-ai-incident-response-telegram-alert.png)
-- **Calibração (Tuning):** Ajuste de regras (`level="0"`) para eliminação de *alert fatigue* e otimização do SOC. ![Tuning Success](./docs/assets/wazuh-alert-tuning-success.png)
+- **Debug do Pipeline:** Investigação e validação do path dos módulos do Filebeat. ![Debug](./docs/assets/wazuh-modulesd-debug-troubleshooting.png)
+- **Validação de Ingestão:** Logs do CloudTrail processados e indexados. ![Ingestão OK](./docs/assets/filebeat-ingestion-success-aws-logs.png)
+- **Tuning de Alertas:** Eliminação de ruído operacional via regras customizadas (`local_rules.xml`). ![Tuning](./docs/assets/wazuh-alert-tuning-success.png)
+- **Resposta Inteligente:** Alerta triado e notificado via Telegram. ![Resposta IA](./docs/assets/wazuh-ai-incident-response-telegram-alert.png)
 
 </details>
 
