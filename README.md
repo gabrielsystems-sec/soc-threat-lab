@@ -5,29 +5,21 @@ Repositório dedicado à implementação de monitoramento defensivo, visibilidad
 ## Business Value & Resiliência
 O objetivo principal é garantir uma infraestrutura auditável em tempo real, reduzindo o tempo de resposta a incidentes (MTTR) através de automações de bloqueio e notificações instantâneas de ameaças críticas.
 
-## Arquitetura de Observabilidade
+```mermaid
+    Kali[Kali Linux] --> DVWA[DVWA / Ubuntu]
+    DVWA --> Suricata[Suricata]
+    DVWA --> WazuhAgent[Wazuh Agent]
+    Suricata --> WazuhManager[Wazuh Manager]
+    WazuhAgent --> WazuhManager
+    WazuhManager --> HAProxy[HAProxy]
+    WazuhManager --> VT[VirusTotal]
+    WazuhManager --> AbuseIPDB[AbuseIPDB]
+    WazuhManager --> CloudTrail[CloudTrail]
+    WazuhManager --> LLM[LLM]
+    VT & AbuseIPDB & CloudTrail & LLM --> Telegram[Telegram Bot]
 
-```text
-[Kali Linux]
-     │
-     ▼
-[DVWA / Ubuntu]
-     │
-┌────┴─────┐
-▼          ▼
-Suricata   Wazuh Agent
-     │
-     ▼
-Wazuh Manager
-     │
-┌────┼────────────┬─────────────┐
-▼    ▼            ▼             ▼
-VT   AbuseIPDB    CloudTrail    LLM
-│    │            │             │
-└────┴────────────┴─────────────┘
-             │
-             ▼
-          Telegram
+    style WazuhManager fill:#f96,stroke:#333,stroke-width:2px
+    style HAProxy fill:#bbf,stroke:#333,stroke-width:1px
 
 # Stack Tecnológica & Matriz de Arquitetura SOC
 
