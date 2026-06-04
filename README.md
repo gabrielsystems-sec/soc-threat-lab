@@ -5,31 +5,26 @@ Repositório dedicado à implementação de monitoramento defensivo, visibilidad
 ## Business Value & Resiliência
 O objetivo principal é garantir uma infraestrutura auditável em tempo real, reduzindo o tempo de resposta a incidentes (MTTR) através de automações de bloqueio e notificações instantâneas de ameaças críticas.
 
----
-
-# Arquitetura do Laboratório
-
-<pre>
-  [Kali Linux] (Simulação de Ataques)
-       │
-       ▼
-[DVWA / Ubuntu 24.04] (Host Real)
-       │
-       ├───► [Suricata NIDS] (Análise de Tráfego)
-       │
-       ▼
- [Wazuh Agent] (Coleta de Telemetria / HIDS)
-       │
-       ▼
- [Wazuh Manager] (Cérebro do SIEM)
-       │
-  ┌────┴────────────────────────┐
-  ▼ (Módulos SOAR / Integrações) ▼
-[VirusTotal API]            [Telegram Alerts]
-[AbuseIPDB API]             [Active Response (FW-Drop)]
-</pre>
-
----
+[Kali Linux]
+      │
+      ▼
+[DVWA / Ubuntu]
+      │
+ ┌────┴─────┐
+ ▼          ▼
+Suricata   Wazuh Agent
+      │
+      ▼
+ Wazuh Manager
+      │
+ ┌────┼────────────┬─────────────┐
+ ▼    ▼            ▼             ▼
+VT   AbuseIPDB   CloudTrail    LLM
+ │      │            │           │
+ └──────┴────────────┴───────────┘
+                │
+                ▼
+           Telegram
 
 # Stack Tecnológica & Matriz de Arquitetura SOC
 
@@ -72,11 +67,6 @@ Fase inicial focada em estabelecer e garantir a comunicação segura entre o ser
 
 </details>
 
-### O que aprendi aqui
-- Em ambientes SIEM, manter a compatibilidade exata de versões entre agentes e servidores evita falhas de conexão.
-- O arquivo ossec.log é sempre o primeiro lugar para olhar quando um agente não quer conectar.
-- Mover chaves e arquivos de forma segura usando SCP garante a integridade do deploy desde o início.
-
 ---
 
 # 📁 2. Governance & Vulnerability Assessment (SCA)
@@ -95,11 +85,6 @@ Uso do módulo SCA (Security Configuration Assessment) do Wazuh para rodar teste
 - Sistema Corrigido e Hardening Aplicado com Sucesso: ![Hardening OK](./docs/assets/sudo-bash-hardening-success-ubuntu-compliance.png)
 
 </details>
-
-### O que aprendi aqui
-- Aplicar boas práticas de hardening direto no sistema reduz drasticamente as chances de ataques de movimentação lateral.
-- Tratar permissões de scripts de segurança impede que auditorias falhem em silêncio.
-- Transformar segurança em métricas visuais facilita o acompanhamento real da postura de defesa da empresa.
 
 ---
 
@@ -122,10 +107,6 @@ Monitoramento local com foco em:
 - Tentativas de Brute Force pegas no Host (Wazuh Dashboard): ![HIDS Autenticação](./docs/assets/04-hids-detection-auth.png)
 
 </details>
-
-### O que aprendi aqui
-- Combinar o que acontece na rede (NIDS) com o que acontece no servidor (HIDS) traz uma visão muito mais completa do ataque.
-- Monitorar a alteração de arquivos de sistema ajuda a descobrir se um invasor tentou deixar um backdoor ou alterar binários.
 
 ---
 
@@ -160,11 +141,6 @@ O serviço do Wazuh Manager parou de iniciar após a configuração das integra�
 
 </details>
 
-### O que aprendi aqui
-- Um único caractere invisível ou tag errada em um arquivo de configuração pode derrubar o sistema de monitoramento inteiro.
-- Sempre valide as alterações com ferramentas de teste antes de dar um restart em serviços críticos.
-- Automatizar bloqueios de IPs suspeitos reduz o tempo de exposição de forma impressionante.
-
 ---
 
 # 📁 5. Adversary Simulation & Web Attack Detection
@@ -196,10 +172,6 @@ Durante os testes de ataque disparados pelo Kali Linux usando requisições repe
 
 </details>
 
-### O que aprendi aqui
-- Ver o bloqueio automático funcionando na prática prova o valor de uma estratégia de defesa bem montada.
-- Rodar simulações reais de ataque é a única forma de garantir que as suas regras de detecção funcionam de verdade.
-
 ---
 
 # Observações Técnicas & Cyber Threat Intelligence
@@ -230,10 +202,44 @@ Integração do ecossistema AWS (CloudTrail) com o SIEM para centralização de 
 
 </details>
 
-### O que aprendi aqui
-- **Segurança de Pipeline:** A automação deve ser resiliente a erros de API e, acima de tudo, segura. Nunca exponha credenciais em logs ou histórico de comandos.
-- **Foco no que importa:** O maior desafio de um SIEM não é detectar tudo, mas filtrar o ruído. O ajuste fino (`tuning`) é o que garante que o analista de segurança não ignore alertas importantes por fadiga operacional.
-- **Valor da IA:** A IA no SOC reduz drasticamente o MTTR, transformando um alerta técnico bruto em uma resposta estruturada de negócio.
+# 📁 7. Network Hardening, Deception & Operational Maintenance
+
+Expansão da segurança de rede com foco em estratégias de *deception* (honeypots) para identificação precoce de ameaças e automação de rotinas críticas de sustentação do SIEM.
+
+## Desafios de Engenharia
+- **Deception:** Configuração de ambiente DMZ isolado para captura de comportamento de atacantes (Cowrie).
+- **Sustentação:** Implementação de rotinas de automação para evitar exaustão de armazenamento no Wazuh.
+
+<details>
+  <summary>📂 Evidências Técnicas (Hardening & Operações)</summary>
+
+- **Configuração de Rede (DMZ):** Validação de conectividade isolada via Netplan. ![Netplan DMZ](./docs/assets/netplan-success-honeypot_dmz.png)
+- **Hardening de Honeypot:** Deploy automatizado e seguro do Cowrie via Docker. ![Honeypot OK](./docs/assets/infra-hardening-docker_honeypot_complete.png)
+- **Monitoramento de Ataque:** Tentativa de acesso SSH interceptada na DMZ. ![SSH Interceptado](./docs/assets/ssh-intercepted-cowrie_dmz.png)
+- **Persistência de Acesso:** Configuração de socket systemd para expor SSH na porta 22222. ![Socket SSH](./docs/assets/systemctl-active-ssh_socket_port_22222.png)
+- **Gestão de Logs:** Automação via cron para limpeza de telemetria e rotatividade. ![Clean Logs](./docs/assets/cron-telemetry-wazuh_log_cleanup.png)
+- **Continuidade de Negócio:** Backup distribuído de configurações críticas do Wazuh. ![Backup OK](./docs/assets/tar-cp-success-distributed_wazuh_backup.png)
+- **Troubleshooting de Rede:** Ajuste de timeouts de NAT no PfSense para estabilidade da DMZ. ![NAT Timeout](./docs/assets/pfsense-troubleshooting-nat_timeout.png)
+
+</details>
+
+# 📁 8. High Availability & Load Balancing (HAProxy)
+
+Implementação de um balanceador de carga para garantir a resiliência e a alta disponibilidade do ecossistema Wazuh, permitindo a distribuição eficiente de tráfego entre os nós do cluster.
+
+## Desafios de Engenharia
+- **Resiliência:** Configuração do HAProxy para assegurar que a interface do SIEM permaneça online mesmo sob falhas de backend.
+- **Troubleshooting de Acesso:** Depuração de bloqueios de rede causados por políticas restritivas do SELinux que impediam a comunicação entre o balanceador e os serviços internos.
+
+<details>
+  <summary>📂 Evidências Técnicas (Troubleshooting & Sucesso)</summary>
+
+- **Troubleshooting Inicial:** Identificação de falha na inicialização do serviço por conflitos de configuração. ![Erro HAProxy](./docs/assets/haproxy-troubleshoot-error.png)
+- **Diagnóstico de Portas:** Verificação de status de sockets (ss) para validar portas 1514/1515 após ajustes. ![Diagnóstico ss](./docs/assets/wazuh-port-diagnosis-ss.png)
+- **Hardening SELinux:** Aplicação de políticas (`semanage`) para permissão de tráfego crítico. ![Correção SELinux](./docs/assets/semanage-selinux-fix.png)
+- **Operação Estável:** Serviço HAProxy validado e em pleno funcionamento. ![HAProxy Ativo](./docs/assets/haproxy-active-status.png)
+
+</details>
 
 # Indicadores do Laboratório
 
