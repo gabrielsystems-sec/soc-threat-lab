@@ -6,26 +6,29 @@ Repositório dedicado à implementação de monitoramento defensivo, visibilidad
 O objetivo principal é garantir uma infraestrutura auditável em tempo real, reduzindo o tempo de resposta a incidentes (MTTR) através de automações de bloqueio e notificações instantâneas de ameaças críticas.
 
 ## Arquitetura de Observabilidade
+
 ```text
-      [Kali Linux]
-           │
-           ▼
-    [DVWA / Ubuntu]
-           │
-    ┌──────┴──────┐
-    ▼             ▼
-Suricata      Wazuh Agent
-    │
-    ▼
-Wazuh Manager ──► [HAProxy]
-    │
-┌───┴──────────┬───────────┐
-▼              ▼           ▼
-VT          AbuseIPDB     LLM
-└──────────────┬───────────┘
-               │
-               ▼
-           Telegram
+[Kali Linux]
+     │
+     ▼
+[DVWA / Ubuntu]
+     │
+┌────┴─────┐
+▼          ▼
+Suricata   Wazuh Agent
+     │
+     ▼
+Wazuh Manager
+     │
+┌────┼────────────┬─────────────┐
+▼    ▼            ▼             ▼
+VT   AbuseIPDB    CloudTrail    LLM
+│    │            │             │
+└────┴────────────┴─────────────┘
+             │
+             ▼
+          Telegram
+```
 
 # Stack Tecnológica & Matriz de Arquitetura SOC
 
@@ -43,7 +46,7 @@ VT          AbuseIPDB     LLM
 | Detecção de Intrusão | Suricata + Regras Wazuh | Análise de Rede e Host | Detectar tráfego malicioso e anomalias no sistema |
 | Inteligência de Ameaças | VirusTotal + AbuseIPDB | Reputação de IPs e Arquivos | Enriquecer alertas com informações externas sobre IPs e hashes |
 | Resposta Automática | Módulo Firewall-Drop | Bloqueio Automatizado | Barrar na hora IPs atacantes em tentativas de força bruta |
-| Notificação de Incidentes | Telegram Bot | Alertas em Tempo Real | Avisar a equipe de segurança assim que um evento crítico acontece |
+| Notificação de Incidentes com Telegram Bot e Alertas em Tempo Real | Avisar a equipe de segurança assim que um evento crítico acontece |
 
 ---
 
@@ -242,13 +245,35 @@ Implementação de um balanceador de carga para garantir a resiliência e a alta
 
 </details>
 
-# Indicadores do Laboratório
+# Competências Desenvolvidas
 
-| Métrica | Objetivo principal |
-| :--- | :--- |
-| Tempo de Resposta (MTTR) | Conter a ameaça em milissegundos sem depender de ação humana |
-| Visibilidade de Rede | Unificar logs de acessos web com comportamento do sistema operacional |
-| Resposta Ativa | Cortar a comunicação de atacantes direto no firewall da máquina afetada |
-| Automação de Rotinas | Manter scripts de checagem rodando sozinhos para evitar falhas manuais |
+- SIEM Engineering (Wazuh)
+- Threat Detection & Correlation
+- Threat Intelligence Integration (VirusTotal & AbuseIPDB)
+- Active Response & Security Automation
+- Linux Hardening & System Administration
+- Log Analysis & Centralized Logging
+- Security Configuration Assessment (SCA)
+- Network Security Monitoring (Suricata NIDS)
+- Host-Based Intrusion Detection (HIDS)
+- Incident Response Fundamentals
+- Cloud Log Ingestion (AWS CloudTrail)
+- Alert Tuning & Noise Reduction
+- Honeypot Deployment & Deception Techniques
+- High Availability & Load Balancing (HAProxy)
+- Infrastructure Troubleshooting & Root Cause Analysis
+- Firewall Management & Network Segmentation
+- SELinux Policy Management
+- Backup, Recovery & Operational Maintenance
+
+# Conclusão
+
+Este laboratório consolidou a construção de uma infraestrutura defensiva completa, integrando monitoramento centralizado, detecção de ameaças, automação de resposta e observabilidade operacional em um ambiente Linux.
+
+Ao longo do projeto foram enfrentados desafios reais de engenharia, incluindo incompatibilidade de versões, falhas de configuração XML, problemas de conectividade, ajustes de SELinux, tuning de alertas, integração de serviços AWS e troubleshooting de componentes críticos da infraestrutura.
+
+Além da implementação das tecnologias, o principal aprendizado foi desenvolver uma abordagem baseada em investigação, análise de causa raiz e resolução estruturada de problemas, aplicando conceitos utilizados em ambientes profissionais de SecOps, Blue Team e Cloud Security.
+
+O resultado final é um ecossistema capaz de coletar, correlacionar e responder a eventos de segurança em tempo real, servindo como base para futuras evoluções em arquiteturas de detecção, automação e defesa em ambientes corporativos.
 
 ---
