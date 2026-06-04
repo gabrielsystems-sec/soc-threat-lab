@@ -28,7 +28,6 @@ VT   AbuseIPDB    CloudTrail    LLM
              │
              ▼
           Telegram
-```
 
 # Stack Tecnológica & Matriz de Arquitetura SOC
 
