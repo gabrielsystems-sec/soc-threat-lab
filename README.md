@@ -5,7 +5,8 @@ Repositório dedicado à implementação de monitoramento defensivo, visibilidad
 ## Business Value & Resiliência
 O objetivo principal é garantir uma infraestrutura auditável em tempo real, reduzindo o tempo de resposta a incidentes (MTTR) através de automações de bloqueio e notificações instantâneas de ameaças críticas.
 
-```mermaid
+ ```mermaid
+
 graph TD
     A[Kali Linux] --> B[DVWA / Ubuntu]
     B --> C[Suricata]
@@ -18,6 +19,7 @@ graph TD
     E --> I[CloudTrail]
     E --> J[LLM]
     G & H & I & J --> K[Telegram]
+``` 
 
 # Stack Tecnológica & Matriz de Arquitetura SOC
 
