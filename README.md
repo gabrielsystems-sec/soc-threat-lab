@@ -19,7 +19,7 @@ graph TD
     E --> I[CloudTrail]
     E --> J[LLM]
     G & H & I & J --> K[Telegram]
-``` 
+ ```
 
 # Stack Tecnológica & Matriz de Arquitetura SOC
 
