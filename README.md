@@ -81,7 +81,8 @@ O objetivo principal é garantir uma infraestrutura auditável em tempo real, **
 
 **Contexto:** Programar o sistema para reagir sozinho em segundos, minimizando o tempo de exposição a ameaças.
 
-### Troubleshooting — Sintaxe XML e Integração de APIs
+### Troubleshooting: Sintaxe XML e Integração de APIs
+
 **O Problema:** Serviço do Wazuh Manager parou de iniciar após configurar integrações, comprometendo a detecção.
 **Diagnóstico:** Caracteres invisíveis no `ossec.conf` e tags obsoletas.
 **Solução:** Limpeza via `sed`, correção do bloco `<integration>` e validação com `wazuh-analysisd -t`.
