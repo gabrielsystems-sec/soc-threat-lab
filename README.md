@@ -2,24 +2,7 @@
 
 Repositório dedicado à implementação de monitoramento defensivo, visibilidade centralizada e resposta automatizada a incidentes. Este laboratório documenta a construção de um ecossistema focado em detecção avançada, hardening contínuo e operações Blue Team.
 
-## Business Value & Resiliência
 O objetivo principal é garantir uma infraestrutura auditável em tempo real, reduzindo o tempo de resposta a incidentes (MTTR) através de automações de bloqueio e notificações instantâneas de ameaças críticas.
-
- ```mermaid
-
-graph TD
-    A[Kali Linux] --> B[DVWA / Ubuntu]
-    B --> C[Suricata]
-    B --> D[Wazuh Agent]
-    C --> E[Wazuh Manager]
-    D --> E
-    E --> F[HAProxy]
-    E --> G[VT]
-    E --> H[AbuseIPDB]
-    E --> I[CloudTrail]
-    E --> J[LLM]
-    G & H & I & J --> K[Telegram]
- ```
 
 # Stack Tecnológica & Matriz de Arquitetura SOC
 
