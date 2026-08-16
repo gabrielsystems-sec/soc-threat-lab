@@ -1,211 +1,275 @@
 # SOC & Defensive Security Infrastructure 🛡️
 
-Laboratório de **monitoramento defensivo, detecção de ameaças e resposta a incidentes** utilizando Wazuh, Suricata e automações de segurança.
+Repositório dedicado à construção de uma infraestrutura de **Security Operations Center (SOC)** voltada para monitoramento defensivo, centralização de eventos, detecção de ameaças e resposta automatizada a incidentes.
 
-O projeto documenta a construção de um ambiente de Blue Team com centralização de logs, avaliação de segurança, detecção de atividades suspeitas, enriquecimento de alertas e resposta automatizada.
+Este laboratório documenta a implementação de um ecossistema **Blue Team**, integrando SIEM, HIDS, NIDS, Threat Intelligence, automação de resposta, análise de vulnerabilidades e mecanismos de alta disponibilidade. O foco central é transformar eventos dispersos de segurança em informações acionáveis, reduzindo o tempo entre **detecção, investigação e resposta**.
 
-| Categoria | Tecnologias | Status |
-| :--- | :--- | :--- |
-| **SIEM/XDR** | Wazuh Manager, Indexer e Dashboard | ✅ Operacional |
-| **Detecção** | Suricata, Wazuh Agent, FIM | ✅ Validado |
-| **Threat Intelligence** | VirusTotal, AbuseIPDB | ✅ Integrado |
-| **Resposta** | Active Response, Firewall | ✅ Automatizado |
-| **Notificação** | Telegram Bot | ✅ Integrado |
+## Objetivo | Segurança
+
+O objetivo principal é garantir **visibilidade contínua, detecção antecipada e resposta automatizada** contra atividades suspeitas dentro da infraestrutura.
+
+Através da centralização de logs, monitoramento de hosts, análise de tráfego, avaliação de postura de segurança e bloqueio automático de indicadores ofensivos, o ambiente reduz o **MTTR (Mean Time To Respond)** e melhora a capacidade operacional de investigação e contenção de incidentes.
 
 ---
 
-## 🎯 Objetivo Técnico
+## Stack Tecnológica & Matriz de Arquitetura
 
-Construir um ambiente de segurança capaz de centralizar eventos, identificar comportamentos suspeitos e reduzir o tempo entre a detecção e a resposta a incidentes.
+* **SIEM/XDR:** Wazuh Manager, Indexer e Dashboard.
+* **IDS/HIDS:** Suricata e Wazuh Agent.
+* **Threat Intelligence:** VirusTotal e AbuseIPDB.
+* **Resposta Automatizada:** Wazuh Active Response e Firewall.
+* **Cloud Logging:** AWS Logs e Filebeat.
+* **Deception:** Cowrie Honeypot.
+* **Alta Disponibilidade:** HAProxy.
+* **Sistemas Operacionais:** Rocky Linux 9, Ubuntu 24.04 LTS e Kali Linux.
 
-O laboratório também explora troubleshooting de agentes, pipelines de logs, configurações do Wazuh, hardening e automação de respostas defensivas.
+### Matriz de Defesa SOC
+
+| Camada | Tecnologia Principal | Estratégia de Defesa | Função no Ecossistema |
+| :--- | :--- | :--- | :--- |
+| **Centralização** | Wazuh Indexer | Retenção e Indexação | Centralização e análise de eventos |
+| **Vulnerabilidades** | Wazuh SCA | CIS Benchmarks | Avaliação de postura e compliance |
+| **Detecção** | Suricata + Wazuh Agent | NIDS / HIDS / FIM | Detecção de ameaças em rede e host |
+| **Inteligência** | VirusTotal + AbuseIPDB | Reputation Enrichment | Enriquecimento de IPs e indicadores |
+| **Resposta** | Active Response | Automated Blocking | Contenção automática de ameaças |
+| **Deception** | Cowrie | Honeypot Monitoring | Captura e análise de atividades ofensivas |
+| **Disponibilidade** | HAProxy | Load Balancing | Resiliência e distribuição de carga |
 
 ---
 
-## 📁 1. Implantação e Conectividade do Wazuh
+## 📁 1. Implantação Essencial & Conectividade Segura
 
 ### Contexto do Problema
-O agente aparecia como desconectado no Dashboard mesmo com a conectividade de rede disponível, comprometendo a coleta de eventos do host.
 
-### Troubleshooting e Resolução
-* **Causa Raiz:** O Agent estava na versão `4.14`, enquanto o Manager utilizava a versão `4.10`.
-* **Resolução:** Padronização das versões, ajustes no `ossec.conf` e validação da autenticação via `authd`.
+A primeira etapa consistiu em estabelecer uma comunicação confiável entre o **Wazuh Manager** e os hosts monitorados. Durante o processo, o Agent permanecia desconectado no Dashboard mesmo com a conectividade de rede disponível, comprometendo a coleta de telemetria e a visibilidade do ambiente.
+
+### Troubleshooting & Resolução
+
+* **Investigação:** Análise dos logs internos do Agent e do processo de autenticação.
+* **Causa Raiz:** O Wazuh Agent utilizava a versão `4.14`, enquanto o Manager operava na versão `4.10`, causando incompatibilidade durante a comunicação.
+* **Resolução:** Padronização das versões, ajustes de permissões no `ossec.conf` e validação da autenticação via `authd`.
 
 ### Evidência Técnica
-<details>
-<summary>📂 Clique para ver o Deploy e Troubleshooting</summary>
 
-* **Estrutura do Host:** ![Setup](./docs/assets/01-agent-inventory-host.png)
-* **Erro de Version Mismatch:** ![Erro Handshake](./docs/assets/03-troubleshooting-version-mismatch.png)
-* **Comunicação Restabelecida:** ![Conexão OK](./docs/assets/02-ubuntu-agent-deployment.png)
-* **Transferência via SCP:** ![SCP Transfer](./docs/assets/scp-transfer-success-ubuntu-agent.png)
+<details>
+  <summary>📂 Clique para ver o Deploy e Troubleshooting</summary>
+
+  * **Estrutura do Host:** ![Setup](./docs/assets/01-agent-inventory-host.png)
+  * **Erro de Version Mismatch:** ![Erro Handshake](./docs/assets/03-troubleshooting-version-mismatch.png)
+  * **Comunicação Restabelecida:** ![Conexão OK](./docs/assets/02-ubuntu-agent-deployment.png)
+  * **Transferência Segura via SCP:** ![SCP Transfer](./docs/assets/scp-transfer-success-ubuntu-agent.png)
 
 </details>
 
 ---
 
-## 📁 2. Avaliação de Segurança e Hardening
+## 📁 2. Governança, Avaliação de Vulnerabilidades & Hardening
 
 ### Contexto do Problema
-Identificar configurações inseguras, serviços desnecessários e falhas de compliance que poderiam aumentar a superfície de ataque.
 
-### Estratégia Aplicada
-Uso do **Security Configuration Assessment (SCA)** do Wazuh para avaliar o host com base em políticas de segurança. Durante o processo, erros de permissão na leitura de logs foram investigados e corrigidos.
+Uma infraestrutura defensiva não deve apenas reagir a ataques já iniciados. Era necessário identificar configurações inseguras, serviços desnecessários e falhas de compliance antes que essas condições fossem exploradas.
+
+### Resolução
+
+Implementação do **Security Configuration Assessment (SCA)** do Wazuh para avaliar a postura de segurança dos hosts com base em políticas e benchmarks.
+
+Durante o processo de validação, erros de permissão relacionados à leitura de logs foram investigados e corrigidos para garantir a integridade da coleta e da análise de segurança.
 
 ### Evidência Técnica
-<details>
-<summary>📂 Clique para ver a Auditoria de Segurança</summary>
 
-* **Falhas de Compliance:** ![SCA Diagnóstico](./docs/assets/02-hardening-audit-sca.png)
-* **Troubleshooting de Permissões:** ![Correção de Permissão](./docs/assets/bash-permission-denied-remediation-log.png)
-* **Hardening Aplicado:** ![Hardening OK](./docs/assets/sudo-bash-hardening-success-ubuntu-compliance.png)
+<details>
+  <summary>📂 Clique para ver a Auditoria e o Hardening</summary>
+
+  * **Falhas de Compliance Detectadas:** ![SCA Diagnóstico](./docs/assets/02-hardening-audit-sca.png)
+  * **Troubleshooting de Permissões:** ![Correção de Permissão](./docs/assets/bash-permission-denied-remediation-log.png)
+  * **Hardening Aplicado:** ![Hardening OK](./docs/assets/sudo-bash-hardening-success-ubuntu-compliance.png)
 
 </details>
 
 ---
 
-## 📁 3. Detecção de Intrusão em Tempo Real
+## 📁 3. Detecção de Intrusão em Tempo Real (NIDS & HIDS)
+
+### Contexto do Problema
+
+A visibilidade limitada a uma única camada de infraestrutura reduz a capacidade de detectar ataques complexos. O laboratório exigia monitoramento simultâneo de **rede, autenticação e integridade de arquivos**.
 
 ### Estratégia de Defesa
-Implementação de duas camadas complementares de monitoramento:
 
-* **NIDS:** Suricata para análise do tráfego de rede.
-* **HIDS:** Wazuh Agent para monitoramento de arquivos e logs de autenticação.
+Implementação de uma arquitetura de detecção em múltiplas camadas:
+
+1. **NIDS:** O Suricata monitora o tráfego de rede em busca de padrões e comportamentos suspeitos.
+2. **HIDS:** O Wazuh Agent monitora eventos locais, integridade de arquivos e logs de autenticação.
+3. **FIM:** Alterações em arquivos monitorados são registradas para investigação posterior.
 
 ### Evidência Técnica
-<details>
-<summary>📂 Clique para ver a Detecção</summary>
 
-* **Detecção de Rede:** ![NIDS Rede](./docs/assets/03-nids-detection-network.png)
-* **Detecção de Brute Force:** ![HIDS Autenticação](./docs/assets/04-hids-detection-auth.png)
+<details>
+  <summary>📂 Clique para ver a Detecção em Tempo Real</summary>
+
+  * **Detecção de Tráfego de Rede:** ![NIDS Rede](./docs/assets/03-nids-detection-network.png)
+  * **Detecção de Brute Force:** ![HIDS Autenticação](./docs/assets/04-hids-detection-auth.png)
 
 </details>
 
 ---
 
-## 📁 4. Resposta Ativa e Inteligência de Ameaças
+## 📁 4. [GOLDEN EVIDENCE] SOC Automation: Active Response & Threat Intelligence
 
-### Contexto do Problema
-Automatizar a resposta a eventos críticos para reduzir o tempo de exposição durante incidentes.
+### O Incidente
 
-### Troubleshooting e Resolução
-Durante a configuração das integrações, o Wazuh Manager deixou de iniciar.
+Durante a implementação das integrações de Threat Intelligence e notificações automatizadas, o serviço do Wazuh Manager deixou de iniciar após alterações no arquivo `ossec.conf`.
 
-* **Causa Raiz:** Caracteres invisíveis no `ossec.conf` e tags obsoletas na configuração.
-* **Resolução:** Limpeza da configuração via `sed`, correção do bloco `<integration>` e validação com `wazuh-analysisd -t`.
+### Troubleshooting (Causa Raiz)
+
+* **Investigação:** Validação da configuração e análise dos logs do serviço.
+* **Causa Raiz:** Caracteres invisíveis e tags obsoletas estavam comprometendo a estrutura XML.
+* **Resolução:** Limpeza da configuração via `sed`, correção do bloco `<integration>` e validação utilizando `wazuh-analysisd -t`.
+
+Após a recuperação do serviço, o pipeline passou a integrar eventos com **VirusTotal**, enriquecer indicadores e encaminhar alertas críticos para o **Telegram**.
 
 ### Evidência Técnica
-<details>
-<summary>📂 Clique para ver a Automação e Integrações</summary>
 
-* **Fluxo de Alerta:** ![Alerta](./docs/assets/wazuh-integration-virustotal-telegram-alert.png)
-* **Investigação do ossec.conf:** ![Configuração](./docs/assets/ossec-conf-xml-syntax-conflict.png)
-* **Erro de Parsing XML:** ![Análise XML](./docs/assets/wazuh-xml-parsing-error-investigation.png)
-* **Parâmetro Inválido:** ![Tag Inválida](./docs/assets/wazuh-invalid-parameter-detection.png)
+<details>
+  <summary>📂 Clique para ver a Automação SOC</summary>
+
+  * **Fluxo Completo de Alerta:** ![Alerta](./docs/assets/wazuh-integration-virustotal-telegram-alert.png)
+  * **Investigação do ossec.conf:** ![Configuração](./docs/assets/ossec-conf-xml-syntax-conflict.png)
+  * **Erro de Parsing XML:** ![Análise XML](./docs/assets/wazuh-xml-parsing-error-investigation.png)
+  * **Detecção de Parâmetro Inválido:** ![Tag Inválida](./docs/assets/wazuh-invalid-parameter-detection.png)
 
 </details>
 
 ---
 
-## 📁 5. Simulação de Ameaças e Detecção de Ataques
+## 📁 5. Simulação de Ameaças & Validação de Detecção
 
 ### Contexto do Problema
-Validar a capacidade do ambiente de detectar e responder a comportamentos ofensivos simulados.
+
+Uma arquitetura defensiva precisa ser validada através de cenários controlados. O objetivo foi testar a capacidade do ambiente de identificar comportamentos ofensivos, correlacionar eventos e executar mecanismos automáticos de resposta.
 
 ### Testes Realizados
-* Simulação de injeção SQL contra DVWA.
-* Tentativas de força bruta utilizando Hydra.
-* Automação de tarefas de verificação via Crontab.
-* Validação da Active Response bloqueando automaticamente o IP identificado.
+
+* **Ataque Web:** Simulação de SQL Injection contra DVWA.
+* **Brute Force:** Tentativas controladas utilizando Hydra.
+* **Automação:** Execução de tarefas programadas via Crontab.
+* **Active Response:** Validação do bloqueio automático do IP identificado pelo mecanismo defensivo.
 
 ### Evidência Técnica
-<details>
-<summary>📂 Clique para ver as Simulações</summary>
 
-* **Correlação de Ataque Web:** ![Ataque Web](./docs/assets/wazuh-threat_intel-web_attack_correlation.png)
-* **Alerta de Hydra no Telegram:** ![Notificação](./docs/assets/hydra-attack-wazuh-alert-telegram.png)
-* **Automação via Crontab:** ![Cron](./docs/assets/crontab-active-scheduled_tasks_automation.png)
+<details>
+  <summary>📂 Clique para ver as Simulações e Correlações</summary>
+
+  * **Correlação de Ataque Web:** ![Ataque Web](./docs/assets/wazuh-threat_intel-web_attack_correlation.png)
+  * **Alerta de Hydra no Telegram:** ![Notificação](./docs/assets/hydra-attack-wazuh-alert-telegram.png)
+  * **Automação via Crontab:** ![Cron](./docs/assets/crontab-active-scheduled_tasks_automation.png)
 
 </details>
 
 ---
 
-## 📁 6. Ingestão de Logs AWS e Tuning de Alertas
+## 📁 6. Ingestão de Logs AWS & Resposta Assistida por IA
 
 ### Contexto do Problema
-Integrar eventos de ambiente AWS ao pipeline de monitoramento e reduzir alertas que não exigiam ação operacional.
 
-### Troubleshooting e Ajustes
-* **Pipeline:** Migração para Filebeat devido a limitações encontradas durante a ingestão.
-* **Tuning:** Ajustes no `local_rules.xml` para reduzir *alert fatigue*.
+Ambientes híbridos exigem visibilidade além da infraestrutura local. Era necessário integrar eventos provenientes da AWS ao pipeline centralizado do SOC e reduzir o volume de alertas que não exigiam ação operacional.
+
+### Troubleshooting & Resolução
+
+* **Pipeline:** Limitações encontradas durante a ingestão exigiram a migração para uma arquitetura baseada em Filebeat.
+* **Tuning:** Ajustes no `local_rules.xml` reduziram o volume de alertas repetitivos e o risco de *alert fatigue*.
+* **Análise Assistida:** Integração de respostas assistidas por IA para apoiar a interpretação inicial de incidentes e acelerar o processo de triagem.
 
 ### Evidência Técnica
-<details>
-<summary>📂 Clique para ver a Ingestão e o Tuning</summary>
 
-* **Troubleshooting do Pipeline:** ![Debug](./docs/assets/wazuh-modulesd-debug-troubleshooting.png)
-* **Ingestão de Logs AWS:** ![Ingestão OK](./docs/assets/filebeat-ingestion-success-aws-logs.png)
-* **Tuning de Alertas:** ![Tuning](./docs/assets/wazuh-alert-tuning-success.png)
-* **Resposta Assistida por IA:** ![Resposta IA](./docs/assets/wazuh-ai-incident-response-telegram-alert.png)
+<details>
+  <summary>📂 Clique para ver a Ingestão e o Tuning</summary>
+
+  * **Troubleshooting do Pipeline:** ![Debug](./docs/assets/wazuh-modulesd-debug-troubleshooting.png)
+  * **Ingestão de Logs AWS:** ![Ingestão OK](./docs/assets/filebeat-ingestion-success-aws-logs.png)
+  * **Tuning de Alertas:** ![Tuning](./docs/assets/wazuh-alert-tuning-success.png)
+  * **Resposta Assistida por IA:** ![Resposta IA](./docs/assets/wazuh-ai-incident-response-telegram-alert.png)
 
 </details>
 
 ---
 
-## 📁 7. Honeypot, Rede e Manutenção
+## 📁 7. Deception Engineering, Hardening de Rede & Manutenção
+
+### Contexto do Problema
+
+Além da detecção tradicional, o ambiente precisava coletar inteligência sobre atividades ofensivas sem expor diretamente os serviços legítimos da infraestrutura.
 
 ### Estratégia Aplicada
-Configuração de uma DMZ para o honeypot **Cowrie**, validação da conectividade da rede e automações de manutenção para evitar problemas de armazenamento.
+
+Implementação de uma **DMZ controlada** para o Honeypot Cowrie, permitindo registrar e analisar tentativas de acesso SSH.
+
+A arquitetura também incluiu persistência do serviço SSH, troubleshooting de NAT e automações de backup para reduzir riscos operacionais e problemas relacionados ao armazenamento.
 
 ### Evidência Técnica
-<details>
-<summary>📂 Clique para ver Honeypot e Operações</summary>
 
-* **Conectividade da DMZ:** ![Netplan](./docs/assets/netplan-success-honeypot_dmz.png)
-* **Deploy do Cowrie:** ![Honeypot](./docs/assets/infra-hardening-docker_honeypot_complete.png)
-* **Ataque SSH Interceptado:** ![SSH](./docs/assets/ssh-intercepted-cowrie_dmz.png)
-* **Persistência do SSH:** ![Socket SSH](./docs/assets/systemctl-active-ssh_socket_port_22222.png)
-* **Backup Distribuído:** ![Backup](./docs/assets/tar-cp-success-distributed_wazuh_backup.png)
-* **Troubleshooting de NAT:** ![NAT](./docs/assets/pfsense-troubleshooting-nat_timeout.png)
+<details>
+  <summary>📂 Clique para ver Honeypot e Operações</summary>
+
+  * **Conectividade da DMZ:** ![Netplan](./docs/assets/netplan-success-honeypot_dmz.png)
+  * **Deploy do Cowrie:** ![Honeypot](./docs/assets/infra-hardening-docker_honeypot_complete.png)
+  * **Ataque SSH Interceptado:** ![SSH](./docs/assets/ssh-intercepted-cowrie_dmz.png)
+  * **Persistência do SSH:** ![Socket SSH](./docs/assets/systemctl-active-ssh_socket_port_22222.png)
+  * **Backup Distribuído:** ![Backup](./docs/assets/tar-cp-success-distributed_wazuh_backup.png)
+  * **Troubleshooting de NAT:** ![NAT](./docs/assets/pfsense-troubleshooting-nat_timeout.png)
 
 </details>
 
 ---
 
-## 📁 8. Alta Disponibilidade com HAProxy
+## 📁 8. Alta Disponibilidade & Balanceamento de Carga (HAProxy)
 
 ### Contexto do Problema
-Implementar uma camada de balanceamento de carga para melhorar a disponibilidade dos serviços.
 
-### Troubleshooting e Resolução
-O SELinux bloqueava a comunicação necessária para o funcionamento do HAProxy.
+A camada de monitoramento também precisa considerar a disponibilidade dos serviços responsáveis pela distribuição de tráfego. Foi implementado o **HAProxy** para adicionar resiliência e capacidade de balanceamento à infraestrutura.
 
-* **Investigação:** Diagnóstico das portas e análise das restrições do SELinux.
-* **Resolução:** Ajuste das políticas utilizando `semanage` e validação do serviço.
+### Troubleshooting (SELinux)
+
+* **Incidente:** O HAProxy não conseguia estabelecer a comunicação necessária com os serviços de backend.
+* **Investigação:** Diagnóstico de portas, conectividade e análise dos bloqueios do SELinux.
+* **Causa Raiz:** Restrições de segurança impediam as conexões necessárias.
+* **Resolução:** Ajuste das políticas utilizando `semanage` e validação final do serviço.
 
 ### Evidência Técnica
-<details>
-<summary>📂 Clique para ver o Troubleshooting e Validação</summary>
 
-* **Erro Inicial:** ![Erro HAProxy](./docs/assets/haproxy-troubleshoot-error.png)
-* **Diagnóstico de Portas:** ![Diagnóstico](./docs/assets/wazuh-port-diagnosis-ss.png)
-* **Correção do SELinux:** ![SELinux](./docs/assets/semanage-selinux-fix.png)
-* **HAProxy Operacional:** ![HAProxy](./docs/assets/haproxy-active-status.png)
+<details>
+  <summary>📂 Clique para ver o Troubleshooting e a Validação</summary>
+
+  * **Erro Inicial:** ![Erro HAProxy](./docs/assets/haproxy-troubleshoot-error.png)
+  * **Diagnóstico de Portas:** ![Diagnóstico](./docs/assets/wazuh-port-diagnosis-ss.png)
+  * **Correção do SELinux:** ![SELinux](./docs/assets/semanage-selinux-fix.png)
+  * **HAProxy Operacional:** ![HAProxy](./docs/assets/haproxy-active-status.png)
 
 </details>
 
 ---
 
-## 📂 Tecnologias e Conceitos Aplicados
+## 📁 Diferenciais de Engenharia: Investigação & Resposta
 
-`Wazuh` · `Suricata` · `SIEM` · `XDR` · `HIDS` · `NIDS` · `SCA` · `FIM` · `Active Response` · `Threat Intelligence` · `Filebeat` · `HAProxy` · `SELinux` · `Linux` · `AWS Logs`
+### Diferenciais Técnicos
+
+* **Threat Detection:** Correlação de eventos de rede e host.
+* **Root Cause Analysis:** Investigação de incompatibilidades, permissões, XML e pipelines.
+* **Threat Intelligence:** Enriquecimento de indicadores com fontes externas.
+* **Automated Response:** Contenção automática de comportamentos identificados.
+* **Cloud Visibility:** Integração de eventos externos ao SOC.
+* **Deception:** Coleta de telemetria através de Honeypot.
+* **High Availability:** Resiliência através de HAProxy.
+* **SELinux Mastery:** Investigação e resolução de bloqueios mantendo o sistema protegido.
 
 ---
 
-## 📌 Principais Aprendizados
+> [!IMPORTANT]
+> **SOC Insight: Alertas sem contexto não são inteligência**
+>
+> Um SOC eficiente não depende apenas da geração de alertas. O valor operacional está na capacidade de correlacionar eventos, reduzir falsos positivos, melhorar os indicadores e executar respostas proporcionais ao risco identificado.
 
-Este laboratório foi construído com foco em **investigação, análise de causa raiz e resolução de problemas**.
-
-Os incidentes documentados envolveram incompatibilidade de versões, falhas de permissões, erros de configuração XML, problemas de ingestão de logs, tuning de alertas, bloqueios do SELinux e troubleshooting de rede.
-
-O resultado foi um ambiente que integra **monitoramento, detecção, investigação e resposta automatizada**, com foco prático em operações de SOC, SecOps e Blue Team.
+> [!TIP]
+> **Lição de Engenharia: Troubleshooting antes da Automação**
+>
+> Durante a implementação, problemas de compatibilidade de versões, permissões, sintaxe XML, pipelines de ingestão e políticas do SELinux precisaram ser resolvidos antes da automação definitiva. A investigação estruturada da causa raiz foi essencial para transformar componentes isolados em uma infraestrutura defensiva integrada.
