@@ -1,39 +1,25 @@
 # SOC & Defensive Security Infrastructure 🛡️
 
-Repositório dedicado à construção de uma infraestrutura de **Security Operations Center (SOC)** voltada para monitoramento defensivo, centralização de eventos, detecção de ameaças e resposta automatizada a incidentes.
+Repositório dedicado à implementação de um ambiente **Blue Team**, integrando monitoramento, detecção de ameaças, Threat Intelligence e resposta automatizada a incidentes.
 
-Este laboratório documenta a implementação de um ecossistema **Blue Team**, integrando SIEM, HIDS, NIDS, Threat Intelligence, automação de resposta, análise de vulnerabilidades e mecanismos de alta disponibilidade. O foco central é transformar eventos dispersos de segurança em informações acionáveis, reduzindo o tempo entre **detecção, investigação e resposta**.
-
-## Objetivo | Segurança
-
-O objetivo principal é garantir **visibilidade contínua, detecção antecipada e resposta automatizada** contra atividades suspeitas dentro da infraestrutura.
-
-Através da centralização de logs, monitoramento de hosts, análise de tráfego, avaliação de postura de segurança e bloqueio automático de indicadores ofensivos, o ambiente reduz o **MTTR (Mean Time To Respond)** e melhora a capacidade operacional de investigação e contenção de incidentes.
+O objetivo é centralizar eventos, identificar atividades suspeitas e reduzir o tempo entre **detecção, investigação e resposta**.
 
 ---
 
-## Stack Tecnológica & Matriz de Arquitetura
+## Objetivo | Segurança
+
+Garantir **visibilidade contínua, detecção antecipada e resposta automatizada** contra ameaças.
+
+## Stack Tecnológica
 
 * **SIEM/XDR:** Wazuh Manager, Indexer e Dashboard.
 * **IDS/HIDS:** Suricata e Wazuh Agent.
 * **Threat Intelligence:** VirusTotal e AbuseIPDB.
-* **Resposta Automatizada:** Wazuh Active Response e Firewall.
+* **Resposta:** Active Response e Firewall.
 * **Cloud Logging:** AWS Logs e Filebeat.
 * **Deception:** Cowrie Honeypot.
 * **Alta Disponibilidade:** HAProxy.
-* **Sistemas Operacionais:** Rocky Linux 9, Ubuntu 24.04 LTS e Kali Linux.
-
-### Matriz de Defesa SOC
-
-| Camada | Tecnologia Principal | Estratégia de Defesa | Função no Ecossistema |
-| :--- | :--- | :--- | :--- |
-| **Centralização** | Wazuh Indexer | Retenção e Indexação | Centralização e análise de eventos |
-| **Vulnerabilidades** | Wazuh SCA | CIS Benchmarks | Avaliação de postura e compliance |
-| **Detecção** | Suricata + Wazuh Agent | NIDS / HIDS / FIM | Detecção de ameaças em rede e host |
-| **Inteligência** | VirusTotal + AbuseIPDB | Reputation Enrichment | Enriquecimento de IPs e indicadores |
-| **Resposta** | Active Response | Automated Blocking | Contenção automática de ameaças |
-| **Deception** | Cowrie | Honeypot Monitoring | Captura e análise de atividades ofensivas |
-| **Disponibilidade** | HAProxy | Load Balancing | Resiliência e distribuição de carga |
+* **Sistemas:** Rocky Linux 9, Ubuntu 24.04 LTS e Kali Linux.
 
 ---
 
